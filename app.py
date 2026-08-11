@@ -42,6 +42,7 @@ def create_loan(l: LoanIn):
     if l.book in all_loaned_books:
         raise HTTPException(status_code=400, detail="Book already on loan")
     loans[l.member].add(l.book)
+    all_loaned_books.add(l.book)
     return {"member": l.member, "book": l.book, "status": "on_loan"}
 
 
