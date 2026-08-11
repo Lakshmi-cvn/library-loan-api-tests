@@ -54,6 +54,7 @@ def return_book(l: LoanIn):
     if l.book not in loans[l.member]:
         raise HTTPException(status_code=400, detail="That book is not on loan")
     loans[l.member].discard(l.book)
+    all_loaned_books.discard(l.book)
     return {"member": l.member, "book": l.book, "status": "returned"}
 
 
