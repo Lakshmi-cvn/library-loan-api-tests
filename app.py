@@ -39,7 +39,7 @@ def create_loan(l: LoanIn):
         raise HTTPException(status_code=404, detail="Member not found")
     if len(loans[l.member]) >= 3:
         raise HTTPException(status_code=400, detail="Max 3 active loans")
-    if l.book in loans[l.member]:
+    if l.book in all_loaned_books:
         raise HTTPException(status_code=400, detail="Book already on loan")
     loans[l.member].add(l.book)
     return {"member": l.member, "book": l.book, "status": "on_loan"}
