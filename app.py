@@ -4,8 +4,9 @@ from pydantic import BaseModel
 app = FastAPI()
 
 # --- In-memory "database" (resets when the app restarts) ---
-members = {}      # member_id -> {"name", "age"}
-loans = {}        # member_id -> set of book ids currently on loan
+members = {}             # member_id -> {"name", "age"}
+loans = {}               # member_id -> set of book ids currently on loan
+all_loaned_books = set() # every book currently on loan, across all members
 next_member_id = 1
 
 
@@ -19,7 +20,7 @@ class LoanIn(BaseModel):
     book: str
 
 
-# --- Rule 1: age must be 12–120 inclusive to register ---
+# --- Rule 1: age must be 12-120 inclusive to register ---
 @app.post("/members", status_code=201)
 def create_member(m: MemberIn):
     global next_member_id
@@ -32,7 +33,7 @@ def create_member(m: MemberIn):
     return {"id": member_id, "name": m.name, "age": m.age}
 
 
-# --- Rule 2: max 3 active loans.  Rule 3: a book on loan can't be re-borrowed ---
+# --- Rule 2: max 3 active loans.  Rule 3: a book on loan can't be borrowed again ---
 @app.post("/loans", status_code=201)
 def create_loan(l: LoanIn):
     if l.member not in members:
